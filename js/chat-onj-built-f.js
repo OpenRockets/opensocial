@@ -9,7 +9,7 @@ var information = "📘 OpenRockets OpenSocial – Community Contribution Initia
 
 // Gemini AI Configuration
 const GEMINI_CONFIG = {
-    apiKey: 'AIzaSyBWYYuYVpPX_5pKnTtGA2jqRKAQAtb0feY',
+    apiKey: 'AIzaSyAmHs1ArHpU-9xkamA_BTtk--sj98J_9JQ',
     apiUrl: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent',
     context: information,
     systemPrompt: `You are an AI assistant for OpenSocial, Sri Lanka's first open-source social media platform by OpenRockets. 
