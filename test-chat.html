@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Widget Test</title>
+    <style>
+        body { 
+            margin: 0; 
+            padding: 20px; 
+            font-family: sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h1 { color: #333; text-align: center; }
+        .status { 
+            padding: 10px; 
+            margin: 10px 0; 
+            border-radius: 5px; 
+            background: #f0f0f0; 
+            border-left: 4px solid #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>OpenSocial Chat Widget Test Page</h1>
+        <div class="status">
+            <strong>Status:</strong> Initializing chat widget...
+        </div>
+        <div class="status">
+            <strong>Expected:</strong> You should see a chat widget in the bottom right corner with typewriter animation.
+        </div>
+        <div class="status">
+            <strong>Check Browser Console:</strong> Open Developer Tools (F12) to see console logs.
+        </div>
+        
+        <p>This is a test page to verify the chat widget is working properly. The widget should inject itself automatically when this script loads.</p>
+    </div>
+
+    <!-- Include the chat widget -->
+    <script>
+        console.log('Test page loaded - about to load chat widget script...');
+    </script>
+    <script src="js/chat-onj-built-f.js"></script>
+    <script>
+        console.log('Chat widget script included - checking if widget loaded...');
+        setTimeout(() => {
+            if (window.OpenSocialChat) {
+                console.log('✅ Chat widget loaded successfully!');
+                document.querySelector('.status').innerHTML = '<strong>Status:</strong> ✅ Chat widget loaded successfully!';
+            } else {
+                console.log('❌ Chat widget failed to load');
+                document.querySelector('.status').innerHTML = '<strong>Status:</strong> ❌ Chat widget failed to load - check console for errors';
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
