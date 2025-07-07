@@ -437,6 +437,12 @@ Please provide a helpful response based only on the context information provided
                 
                 /* Chat Widget Styles */
                 #opensocial-chat-widget {
+                    width: 100%;
+    display: flex
+;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 2rem;
                     position: fixed !important;
                     bottom: 2rem !important;
                     left: 50% !important;
@@ -890,29 +896,52 @@ Please provide a helpful response based only on the context information provided
                 }
                 
                 /* Responsive adjustments */
-                @media (max-width: 640px) {
+                @media (max-width: 768px) {
                     .opensocial-chat-container {
-                        width: 280px !important;
-                        padding: 0.5rem 1rem !important;
-
+                        width: calc(100vw - 2rem) !important;
+                        max-width: 350px !important;
+                        min-width: 280px !important;
+                        padding: 0.5rem 0.75rem !important;
                     }
                     
                     .opensocial-chat-container:hover {
-                        width: 320px !important;
+                        width: calc(100vw - 1.5rem) !important;
+                        max-width: 380px !important;
                         height: 55px !important;
                     }
                     
                     .opensocial-chat-container.focused {
-                        width: 340px !important;
+                        width: calc(100vw - 1rem) !important;
+                        max-width: 400px !important;
                         height: 60px !important;
                     }
                     
+                    .opensocial-button-container {
+                        gap: 0.25rem !important;
+                    }
+                    
+                    .opensocial-send-button,
+                    .opensocial-github-button,
+                    .opensocial-close-button {
+                        min-width: 2rem !important;
+                        width: 2rem !important;
+                        height: 2rem !important;
+                        padding: 0.25rem !important;
+                    }
+                    
+                    .opensocial-chat-input {
+                        font-size: 0.9rem !important;
+                        padding: 0.5rem 0.75rem !important;
+                    }
+                    
                     #opensocial-chat-widget {
+                        right: 0.5rem !important;
                         bottom: 0.5rem !important;
                     }
                     
                     .opensocial-minimized-widget {
                         bottom: 0.5rem !important;
+                        right: 0.5rem !important;
                     }
                     
                     .opensocial-minimized-icon {
@@ -932,29 +961,99 @@ Please provide a helpful response based only on the context information provided
                 
                 @media (max-width: 480px) {
                     .opensocial-chat-container {
-                        width: 260px !important;
+                        width: calc(100vw - 1.5rem) !important;
+                        max-width: 320px !important;
+                        min-width: 260px !important;
+                        padding: 0.5rem !important;
                     }
                     
                     .opensocial-chat-container:hover {
-                        width: 300px !important;
+                        width: calc(100vw - 1rem) !important;
+                        max-width: 340px !important;
                     }
                     
                     .opensocial-chat-container.focused {
-                        width: 320px !important;
+                        width: calc(100vw - 0.5rem) !important;
+                        max-width: 360px !important;
+                    }
+                    
+                    .opensocial-button-container {
+                        gap: 0.2rem !important;
+                    }
+                    
+                    .opensocial-send-button,
+                    .opensocial-github-button,
+                    .opensocial-close-button {
+                        min-width: 1.8rem !important;
+                        width: 1.8rem !important;
+                        height: 1.8rem !important;
+                        padding: 0.2rem !important;
+                    }
+                    
+                    .opensocial-send-button svg,
+                    .opensocial-github-button svg,
+                    .opensocial-close-button svg {
+                        width: 14px !important;
+                        height: 14px !important;
+                    }
+                    
+                    .opensocial-chat-input {
+                        font-size: 0.85rem !important;
+                        padding: 0.4rem 0.6rem !important;
+                    }
+                    
+                    #opensocial-chat-widget {
+                        right: 0.25rem !important;
+                        bottom: 0.25rem !important;
+                    }
+                    
+                    .opensocial-minimized-widget {
+                        bottom: 0.25rem !important;
+                        right: 0.25rem !important;
                     }
                 }
                 
                 @media (max-width: 360px) {
                     .opensocial-chat-container {
-                        width: 240px !important;
+                        width: calc(100vw - 1rem) !important;
+                        max-width: 300px !important;
+                        min-width: 240px !important;
+                        padding: 0.4rem !important;
                     }
                     
                     .opensocial-chat-container:hover {
-                        width: 280px !important;
+                        width: calc(100vw - 0.75rem) !important;
+                        max-width: 320px !important;
                     }
                     
                     .opensocial-chat-container.focused {
-                        width: 300px !important;
+                        width: calc(100vw - 0.5rem) !important;
+                        max-width: 340px !important;
+                    }
+                    
+                    .opensocial-button-container {
+                        gap: 0.15rem !important;
+                    }
+                    
+                    .opensocial-send-button,
+                    .opensocial-github-button,
+                    .opensocial-close-button {
+                        min-width: 1.6rem !important;
+                        width: 1.6rem !important;
+                        height: 1.6rem !important;
+                        padding: 0.15rem !important;
+                    }
+                    
+                    .opensocial-send-button svg,
+                    .opensocial-github-button svg,
+                    .opensocial-close-button svg {
+                        width: 12px !important;
+                        height: 12px !important;
+                    }
+                    
+                    .opensocial-chat-input {
+                        font-size: 0.8rem !important;
+                        padding: 0.35rem 0.5rem !important;
                     }
                 }
             `;
@@ -1153,20 +1252,65 @@ Please provide a helpful response based only on the context information provided
             this.chatContainer.addEventListener('touchstart', () => {
                 this.expandChat();
             }, { passive: true });
+            
+            // Window resize listener for responsive sizing
+            window.addEventListener('resize', () => {
+                if (this.isExpanded) {
+                    this.expandChat();
+                } else {
+                    this.collapseChat();
+                }
+            });
         }
         
         expandChat() {
             this.isExpanded = true;
             const container = this.chatContainer.querySelector('.opensocial-chat-container');
-            container.style.width = '400px';
-            container.style.height = '60px';
+            
+            // Use responsive sizing based on screen width
+            const screenWidth = window.innerWidth;
+            
+            if (screenWidth <= 360) {
+                container.style.width = 'calc(100vw - 0.5rem)';
+                container.style.maxWidth = '340px';
+                container.style.height = '60px';
+            } else if (screenWidth <= 480) {
+                container.style.width = 'calc(100vw - 0.5rem)';
+                container.style.maxWidth = '360px';
+                container.style.height = '60px';
+            } else if (screenWidth <= 768) {
+                container.style.width = 'calc(100vw - 1rem)';
+                container.style.maxWidth = '400px';
+                container.style.height = '60px';
+            } else {
+                container.style.width = '400px';
+                container.style.height = '60px';
+            }
         }
         
         collapseChat() {
             this.isExpanded = false;
             const container = this.chatContainer.querySelector('.opensocial-chat-container');
-            container.style.width = '300px';
-            container.style.height = '50px';
+            
+            // Use responsive sizing based on screen width
+            const screenWidth = window.innerWidth;
+            
+            if (screenWidth <= 360) {
+                container.style.width = 'calc(100vw - 1rem)';
+                container.style.maxWidth = '300px';
+                container.style.height = '50px';
+            } else if (screenWidth <= 480) {
+                container.style.width = 'calc(100vw - 1.5rem)';
+                container.style.maxWidth = '320px';
+                container.style.height = '50px';
+            } else if (screenWidth <= 768) {
+                container.style.width = 'calc(100vw - 2rem)';
+                container.style.maxWidth = '350px';
+                container.style.height = '50px';
+            } else {
+                container.style.width = '300px';
+                container.style.height = '50px';
+            }
         }
         
         showThinking() {
