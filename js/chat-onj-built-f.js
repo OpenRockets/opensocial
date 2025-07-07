@@ -39,6 +39,8 @@ Instructions:
             this.chatContainer = null;
             this.chatInput = null;
             this.sendButton = null;
+            this.githubButton = null;
+            this.closeButton = null;
             this.thinkingTray = null;
             this.initiativeText = null;
             this.isExpanded = false;
@@ -48,6 +50,7 @@ Instructions:
             this.currentTextIndex = 0;
             this.currentCharIndex = 0;
             this.fallbackMode = false; // Flag to temporarily use fallback when rate limited
+            this.isMinimized = this.checkMinimizedState(); // Check if widget was closed
             
             // Chat placeholder texts with typewriter effect
             this.placeholderTexts = [
@@ -78,10 +81,75 @@ Instructions:
             console.log('Chat widget: DOM ready, initializing...');
             this.injectStyles();
             this.createInitiativeText();
-            this.createChatWidget();
-            this.setupEventListeners();
-            this.startTypewriterEffect();
+            
+            // Check if widget should be minimized
+            if (this.isMinimized) {
+                this.createMinimizedWidget();
+            } else {
+                this.createChatWidget();
+                this.setupEventListeners();
+                this.startTypewriterEffect();
+            }
+            
             console.log('Chat widget: Initialization complete!');
+        }
+        
+        // Check if widget was previously minimized
+        checkMinimizedState() {
+            return localStorage.getItem('opensocial-widget-minimized') === 'true';
+        }
+        
+        // Set minimized state
+        setMinimizedState(minimized) {
+            if (minimized) {
+                localStorage.setItem('opensocial-widget-minimized', 'true');
+            } else {
+                localStorage.removeItem('opensocial-widget-minimized');
+            }
+        }
+        
+        // Create minimized widget (small circle)
+        createMinimizedWidget() {
+            console.log('Creating minimized widget...');
+            
+            this.chatContainer = document.createElement('div');
+            this.chatContainer.id = 'opensocial-chat-widget';
+            this.chatContainer.className = 'opensocial-minimized-widget';
+            
+            const circleIcon = document.createElement('div');
+            circleIcon.className = 'opensocial-minimized-icon';
+            circleIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="white" viewBox="0 0 16 16"><path d="M2.678 11.894a1 1 0 0 1 .287.801 10.97 10.97 0 0 1-.398 2c1.395-.323 2.247-.697 2.634-.893a1 1 0 0 1 .71-.074A8.06 8.06 0 0 0 8 14c3.996 0 7-2.807 7-6 0-3.192-3.004-6-7-6S1 4.808 1 8c0 1.468.617 2.83 1.678 3.894zm-.493 3.905a21.682 21.682 0 0 1-.713.129c-.2.032-.352-.176-.273-.362a9.68 9.68 0 0 0 .244-.637l.003-.01c.248-.72.45-1.548.524-2.319C.743 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7-3.582 7-8 7a9.06 9.06 0 0 1-2.347-.306c-.52.263-1.639.742-3.468 1.105z"/></svg>';
+            circleIcon.setAttribute('title', 'Open OpenSocial Chat');
+            
+            circleIcon.addEventListener('click', () => {
+                this.restoreWidget();
+            });
+            
+            // Add hover effect for better UX
+            circleIcon.addEventListener('mouseenter', () => {
+                circleIcon.style.transform = 'scale(1.1) translateY(-2px)';
+            });
+            
+            circleIcon.addEventListener('mouseleave', () => {
+                circleIcon.style.transform = 'scale(1)';
+            });
+            
+            this.chatContainer.appendChild(circleIcon);
+            document.body.appendChild(this.chatContainer);
+            console.log('Minimized widget created');
+        }
+        
+        restoreWidget() {
+            console.log('Restoring widget...');
+            this.setMinimizedState(false);
+            location.reload();
+        }
+        
+        minimizeWidget() {
+            console.log('Minimizing widget...');
+            this.setMinimizedState(true);
+            this.destroy();
+            this.createMinimizedWidget();
         }
         
         // Gemini AI Integration
@@ -389,10 +457,10 @@ Please provide a helpful response based only on the context information provided
                     padding: 0.75rem 1.5rem !important;
                     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.1) !important;
                     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-                    width: 300px !important;
+                    width: 520px !important;
                     height: 50px !important;
-                    margin-bottom:2rem;
                     position: relative !important;
+                    min-width: 520px !important;
                 }
                 
                 .opensocial-chat-container:hover {
@@ -400,12 +468,12 @@ Please provide a helpful response based only on the context information provided
                     background: rgba(0, 0, 0, 0.8) !important;
                     border-color: rgba(255, 255, 255, 0.3) !important;
                     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
-                    width: 400px !important;
+                    width: 620px !important;
                     height: 60px !important;
                 }
                 
                 .opensocial-chat-container.focused {
-                    width: 450px !important;
+                    width: 680px !important;
                     height: 65px !important;
                     transform: scale(1.08) !important;
                     background: rgba(0, 0, 0, 0.85) !important;
@@ -656,6 +724,104 @@ Please provide a helpful response based only on the context information provided
                     transform: translateY(0) scale(1.05) !important;
                 }
                 
+                /* Button container for multiple buttons */
+                .opensocial-button-container {
+                    display: flex !important;
+                    align-items: center !important;
+                    gap: 0.5rem !important;
+                }
+                
+                /* GitHub button styles */
+                .opensocial-github-button {
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    min-width: 2rem !important;
+                    min-height: 2rem !important;
+                    background: rgba(0, 123, 255, 0.3) !important;
+                    border: 1px solid rgba(0, 123, 255, 0.5) !important;
+                    border-radius: 50% !important;
+                    color: white !important;
+                    cursor: pointer !important;
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+                    padding: 0 !important;
+                    margin: 0 !important;
+                }
+                
+                .opensocial-github-button:hover {
+                    background: rgba(0, 123, 255, 0.5) !important;
+                    border-color: rgba(0, 123, 255, 0.8) !important;
+                    transform: translateY(-1px) scale(1.1) !important;
+                    box-shadow: 0 0 20px rgba(0, 123, 255, 0.4) !important;
+                }
+                
+                /* Close button styles */
+                .opensocial-close-button {
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    min-width: 2rem !important;
+                    min-height: 2rem !important;
+                    background: rgba(220, 38, 38, 0.3) !important;
+                    border: 1px solid rgba(220, 38, 38, 0.5) !important;
+                    border-radius: 50% !important;
+                    color: white !important;
+                    cursor: pointer !important;
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+                    padding: 0 !important;
+                    margin: 0 !important;
+                }
+                
+                .opensocial-close-button:hover {
+                    background: rgba(220, 38, 38, 0.5) !important;
+                    border-color: rgba(220, 38, 38, 0.8) !important;
+                    transform: translateY(-1px) scale(1.1) !important;
+                    box-shadow: 0 0 20px rgba(220, 38, 38, 0.4) !important;
+                }
+                
+                /* Minimized widget styles */
+                .opensocial-minimized-widget {
+                    position: fixed !important;
+                    bottom: 2rem !important;
+                    right: 2rem !important;
+                    z-index: 999999 !important;
+                    pointer-events: auto !important;
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+                }
+                
+                .opensocial-minimized-icon {
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    min-width: 3rem !important;
+                    min-height: 3rem !important;
+                    background: rgba(0, 0, 0, 0.7) !important;
+                    backdrop-filter: blur(16px) !important;
+                    -webkit-backdrop-filter: blur(16px) !important;
+                    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+                    border-radius: 50% !important;
+                    color: white !important;
+                    cursor: pointer !important;
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+                    padding: 0 !important;
+                    margin: 0 !important;
+                    position:fixed;
+                    right: 1rem;
+                    bottom:1rem;
+                    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.1) !important;
+                }
+                
+                .opensocial-minimized-icon:hover {
+                    transform: scale(1.1) translateY(-2px) !important;
+                    background: rgba(0, 0, 0, 0.8) !important;
+                    border-color: rgba(255, 255, 255, 0.3) !important;
+                    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
+                }
+                
+                .opensocial-minimized-icon:active {
+                    transform: scale(1.05) translateY(0) !important;
+                }
+                
                 /* Animation keyframes */
                 @keyframes opensocial-pulse {
                     0%, 100% {
@@ -743,6 +909,15 @@ Please provide a helpful response based only on the context information provided
                     
                     #opensocial-chat-widget {
                         bottom: 0.5rem !important;
+                    }
+                    
+                    .opensocial-minimized-widget {
+                        bottom: 0.5rem !important;
+                    }
+                    
+                    .opensocial-minimized-icon {
+                        min-width: 2.5rem !important;
+                        min-height: 2.5rem !important;
                     }
                     
                     .opensocial-initiative-text {
@@ -867,9 +1042,32 @@ Please provide a helpful response based only on the context information provided
             this.sendButton.setAttribute('aria-label', 'Send message');
             console.log('Created send button');
             
+            // Create GitHub button
+            this.githubButton = document.createElement('button');
+            this.githubButton.className = 'opensocial-github-button';
+            this.githubButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>';
+            this.githubButton.type = 'button';
+            this.githubButton.setAttribute('aria-label', 'Open GitHub');
+            console.log('Created GitHub button');
+            
+            // Create close button
+            this.closeButton = document.createElement('button');
+            this.closeButton.className = 'opensocial-close-button';
+            this.closeButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16"><path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/></svg>';
+            this.closeButton.type = 'button';
+            this.closeButton.setAttribute('aria-label', 'Close widget');
+            console.log('Created close button');
+            
+            // Create button container
+            const buttonContainer = document.createElement('div');
+            buttonContainer.className = 'opensocial-button-container';
+            buttonContainer.appendChild(this.githubButton);
+            buttonContainer.appendChild(this.closeButton);
+            buttonContainer.appendChild(this.sendButton);
+            
             // Assemble the widget (thinking tray is separate overlay)
             chatWrapper.appendChild(this.chatInput);
-            chatWrapper.appendChild(this.sendButton);
+            chatWrapper.appendChild(buttonContainer);
             this.chatContainer.appendChild(chatWrapper);
             console.log('Assembled widget components');
             
@@ -922,6 +1120,18 @@ Please provide a helpful response based only on the context information provided
             this.sendButton.addEventListener('click', (e) => {
                 e.preventDefault();
                 this.handleSendMessage();
+            });
+            
+            // GitHub button click
+            this.githubButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.open('https://github.com/OpenRockets/opensocial', '_blank');
+            });
+            
+            // Close button click
+            this.closeButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.minimizeWidget();
             });
             
             // Enter key press

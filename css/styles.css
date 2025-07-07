@@ -1,0 +1,21 @@
+.opensocial-minimized-icon{
+    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    min-width: 3rem !important;
+                    min-height: 3rem !important;
+                    background: rgba(0, 0, 0, 0.7) !important;
+                    backdrop-filter: blur(16px) !important;
+                    -webkit-backdrop-filter: blur(16px) !important;
+                    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+                    border-radius: 50% !important;
+                    color: white !important;
+                    cursor: pointer !important;
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+                    padding: 0 !important;
+                    margin: 0 !important;
+                    position:fixed;
+                    right: 1rem;
+                    bottom:1rem;
+                    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.1) !important;
+}
