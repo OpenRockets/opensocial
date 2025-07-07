@@ -47,6 +47,7 @@ Instructions:
             this.typewriterTimeout = null;
             this.currentTextIndex = 0;
             this.currentCharIndex = 0;
+            this.fallbackMode = false; // Flag to temporarily use fallback when rate limited
             
             // Chat placeholder texts with typewriter effect
             this.placeholderTexts = [
@@ -85,6 +86,12 @@ Instructions:
         
         // Gemini AI Integration
         async callGeminiAPI(message) {
+            // If we're in fallback mode due to rate limiting, skip API call
+            if (this.fallbackMode) {
+                console.log('📝 Using fallback mode - skipping API call');
+                return this.getFallbackResponse(message);
+            }
+            
             try {
                 const requestBody = {
                     contents: [{
@@ -131,7 +138,16 @@ Please provide a helpful response based only on the context information provided
                 });
 
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    // Handle specific HTTP errors
+                    if (response.status === 429) {
+                        throw new Error(`Rate limit exceeded. Using fallback response instead.`);
+                    } else if (response.status === 403) {
+                        throw new Error(`API access forbidden. Check API key permissions.`);
+                    } else if (response.status >= 500) {
+                        throw new Error(`Gemini service temporarily unavailable (${response.status}). Using fallback response.`);
+                    } else {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
                 }
 
                 const data = await response.json();
@@ -143,7 +159,26 @@ Please provide a helpful response based only on the context information provided
                     throw new Error('Invalid response format from Gemini API');
                 }
             } catch (error) {
-                console.error('Gemini API Error:', error);
+                console.warn('Gemini API Error:', error.message);
+                
+                // Show a brief user-friendly notification for rate limits
+                if (error.message.includes('Rate limit') || error.message.includes('429')) {
+                    console.log('ℹ️ API rate limit reached - switching to fallback responses');
+                    this.fallbackMode = true;
+                    
+                    // Show error recovery links to user
+                    this.showErrorRecoveryLinks(message);
+                    
+                    // Reset fallback mode after 5 minutes
+                    setTimeout(() => {
+                        this.fallbackMode = false;
+                        console.log('🔄 Fallback mode disabled - will retry API calls');
+                    }, 5 * 60 * 1000);
+                } else {
+                    // For other errors, also show recovery links
+                    this.showErrorRecoveryLinks(message);
+                }
+                
                 return this.getFallbackResponse(message);
             }
         }
@@ -977,6 +1012,53 @@ Please provide a helpful response based only on the context information provided
             });
         }
         
+        // Show error recovery links when API fails
+        showErrorRecoveryLinks(originalMessage) {
+            this.isThinking = true;
+            
+            const errorContent = `
+                <div style="text-align: center; padding: 1rem;">
+                    <div style="font-size: 1.2rem; font-weight: 600; color: #fbbf24; margin-bottom: 1rem;">
+                        ⚡ High Traffic - Quick Links
+                    </div>
+                    <div style="font-size: 0.95rem; color: #e5e7eb; margin-bottom: 1.5rem; opacity: 0.9;">
+                        While our AI catches up, here are direct links:
+                    </div>
+                    <div style="display: grid; gap: 0.75rem; max-width: 400px; margin: 0 auto;">
+                        <a href="https://github.com/OpenRockets/opensocial" target="_blank" 
+                           style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; background: rgba(99, 102, 241, 0.2); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 10px; color: #c7d2fe; text-decoration: none;">
+                            <div style="font-size: 1.5rem;">🚀</div>
+                            <div><div style="font-weight: 600;">GitHub Repository</div><div style="font-size: 0.8rem; opacity: 0.8;">View code & contribute</div></div>
+                        </a>
+                        <a href="https://instagram.com/openrockets" target="_blank" 
+                           style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; background: rgba(236, 72, 153, 0.2); border: 1px solid rgba(236, 72, 153, 0.3); border-radius: 10px; color: #fce7f3; text-decoration: none;">
+                            <div style="font-size: 1.5rem;">📸</div>
+                            <div><div style="font-weight: 600;">Instagram</div><div style="font-size: 0.8rem; opacity: 0.8;">Latest updates & news</div></div>
+                        </a>
+                        <a href="https://x.com/openrockets" target="_blank" 
+                           style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; background: rgba(34, 197, 94, 0.2); border: 1px solid rgba(34, 197, 94, 0.3); border-radius: 10px; color: #dcfce7; text-decoration: none;">
+                            <div style="font-size: 1.5rem;">🐦</div>
+                            <div><div style="font-weight: 600;">X (Twitter)</div><div style="font-size: 0.8rem; opacity: 0.8;">Real-time announcements</div></div>
+                        </a>
+                    </div>
+                </div>
+            `;
+            
+            this.thinkingTray.innerHTML = `
+                <div class="opensocial-response-box opensocial-animate-in">
+                    <button class="opensocial-close-btn" onclick="window.OpenSocialChat.hideThinking()">×</button>
+                    ${errorContent}
+                </div>
+            `;
+            this.thinkingTray.classList.add('show');
+            
+            this.thinkingTray.addEventListener('click', (e) => {
+                if (e.target === this.thinkingTray) {
+                    this.hideThinking();
+                }
+            });
+        }
+        
         // Quick notification system from app_temp.js
         showQuickNotification(message) {
             const notification = document.createElement('div');
@@ -1112,6 +1194,13 @@ Please provide a helpful response based only on the context information provided
             const response = this.getFallbackResponse(message);
             const formattedResponse = this.formatResponse(response);
             this.showThinkingResponse(formattedResponse);
+        }
+        
+        // Helper method to focus the chat input
+        focusInput() {
+            if (this.chatInput) {
+                this.chatInput.focus();
+            }
         }
         
         // Public method to destroy the widget
