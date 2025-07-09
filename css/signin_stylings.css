@@ -1,0 +1,45 @@
+body {
+  background-color: #fffbe6; /*spotify blue/white*/
+  font-family: Arial, sans-sarif;
+  padding: 20px;
+}
+
+h1 {
+  color: darkblue;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+form {
+  border: 2px dashed grey;
+  padding: 30px;
+  width: 350px;
+  margin: 30px auto;
+  background-color: #f0f0f0;
+}
+
+table {
+  width: 100%;
+}
+
+input {
+  width: 100%;
+  padding: 7px;
+  margin-top: 4px;
+}
+
+button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px;
+  width: 100%;
+  border: none;
+  margin-top: 10px;
+}
+
+footer {
+  text-align: center;
+  margin-top: 40px;
+  font-size: 14px;
+  color: gray;
+}
