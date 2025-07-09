@@ -24,3 +24,5 @@ Then this is a great time to step in.
 > No need to wait for permission. If something looks empty or broken, fix it your way. We'll notice.
 
 Want to be featured or mentioned in our social media for your contributions? Just open a pull request and let your name speak for itself.
+
+### Gayan contributed here! @gayan-pereraa 
